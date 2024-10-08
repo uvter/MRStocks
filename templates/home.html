@@ -1,0 +1,72 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Stock Analysis</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px; /* Added margin for separation */
+        }
+        th, td {
+            padding: 8px;
+            text-align: left;
+            border: 1px solid #ddd;
+        }
+        th {
+            background-color: #f2f2f2;
+        }
+        h2 {
+            margin-top: 20px; /* Added margin for headings */
+        }
+    </style>
+</head>
+<body>
+    <h1>Stock Analysis Tool</h1>
+    <form method="POST" action="/">
+        <label for="ticker">Enter Stock Ticker:</label>
+        <input type="text" id="ticker" name="ticker" required>
+        <label for="seeds">Random Seed(s) (comma-separated, e.g., 42,100,200):</label>
+        <input type="text" id="seeds" name="seeds" value="42,100,200">
+        <button type="submit">Analyze</button>
+    </form>
+
+{% if ml_results %}
+<h2>Model Performance Summary</h2>
+<table>
+    <tr>
+        <th>Seed</th>
+        <th>Model</th>
+        <th>RMSE</th>
+        <th>R²</th>
+    </tr>
+    {% for result in ml_results %}  <!-- Iterate directly over ml_results -->
+        {% for model, metrics in result.items() %}
+            {% if model != 'seed' %}  <!-- Avoid displaying the seed here -->
+                <tr>
+                    <td>{{ result.seed }}</td>  <!-- Display the seed for each model -->
+                    <td>{{ model }}</td>
+                    <td>{{ metrics.RMSE | round(2) }}</td>  <!-- Format RMSE to 2 decimal places -->
+                    <td>{{ metrics['R²'] | round(2) }}</td>  <!-- Format R² to 2 decimal places -->
+                </tr>
+            {% endif %}
+        {% endfor %}
+    {% endfor %}
+</table>
+<h2>Charts</h2>
+<ul>
+    {% for plot in plots %}  <!-- Loop over plots -->
+        <li><img src="{{ plot }}" alt="Plot for {{ plot }}" style="max-width: 600px;"></li>
+    {% endfor %}
+</ul>
+{% endif %}
+
+
+</body>
+</html>
